@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'movie_screen.dart';
 import 'tv_screen.dart';
 
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -38,10 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/movie.png'), // Ganti dengan path gambar Anda
-            fit: BoxFit.cover,
-          ),
         ),
             child: _screens[_selectedIndex],
       ),

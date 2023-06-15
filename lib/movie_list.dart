@@ -76,7 +76,22 @@ class _MovieListState extends State<MovieList> {
             onTap: () => navigateToMovieDetails(movie),
             child: ListTile(
               title: Text(movie['title']),
-              subtitle: Text('Vote Average: ${movie['vote_average'].toString()}'),
+              subtitle: Row(
+                children: [
+                  Icon(
+                    Icons.star,
+                    color: Colors.yellow,
+                  ),
+                  SizedBox(width: 4),
+                  Text(
+                    movie['vote_average'].toString(),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -99,7 +114,22 @@ class MovieDetails extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Vote Average: ${movie['vote_average'].toString()}'),
+          Row(
+            children: [
+              Icon(
+                Icons.star,
+                color: Colors.yellow,
+              ),
+              SizedBox(width: 4),
+              Text(
+                movie['vote_average'].toString(),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
           SizedBox(height: 8),
           Text('Overview: ${movie['overview']}'),
           SizedBox(height: 8),

@@ -71,7 +71,22 @@ class _TVListState extends State<TVList> {
             onTap: () => navigateToTVDetails(tvShow),
             child: ListTile(
               title: Text(tvShow['name']),
-              subtitle: Text('Vote Average: ${tvShow['vote_average'].toString()}'),
+              subtitle: Row(
+                children: [
+                  Icon(
+                    Icons.star,
+                    color: Colors.yellow,
+                  ),
+                  SizedBox(width: 4),
+                  Text(
+                    tvShow['vote_average'].toString(),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -94,7 +109,22 @@ class TVDetails extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Vote Average: ${tvShow['vote_average'].toString()}'),
+          Row(
+            children: [
+              Icon(
+                Icons.star,
+                color: Colors.yellow,
+              ),
+              SizedBox(width: 4),
+              Text(
+                tvShow['vote_average'].toString(),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
           SizedBox(height: 8),
           Text('Overview: ${tvShow['overview']}'),
           SizedBox(height: 8),

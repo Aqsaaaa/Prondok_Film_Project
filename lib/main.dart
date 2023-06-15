@@ -12,8 +12,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Splash Screen Example',
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.grey,
       ),
+      debugShowCheckedModeBanner: false,
       initialRoute: '/splash', 
       routes: {
         '/splash': (context) => SplashScreen(),
