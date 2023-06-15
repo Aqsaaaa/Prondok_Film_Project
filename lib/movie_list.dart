@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-
 class MovieList extends StatefulWidget {
   final int genreId;
   final String accessToken;
@@ -42,6 +41,13 @@ class _MovieListState extends State<MovieList> {
   }
 
   void navigateToMovieDetails(dynamic movie) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('You are viewing movie: ${movie['title']}'),
+        duration: Duration(seconds: 3),
+      ),
+    );
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -70,8 +76,7 @@ class _MovieListState extends State<MovieList> {
             onTap: () => navigateToMovieDetails(movie),
             child: ListTile(
               title: Text(movie['title']),
-              subtitle:
-                  Text('Vote Average: ${movie['vote_average'].toString()}'),
+              subtitle: Text('Vote Average: ${movie['vote_average'].toString()}'),
             ),
           );
         },

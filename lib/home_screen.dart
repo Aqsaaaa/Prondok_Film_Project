@@ -10,7 +10,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  static  List<Widget> _screens = [
+  static List<Widget> _screens = [
     MovieScreen(),
     TvScreen(),
   ];
@@ -25,9 +25,26 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Center(
+          child: Text(
+            'Home',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'UniqueFont', // Ganti dengan font yang unik
+            ),
+          ),
+        ),
       ),
-      body: _screens[_selectedIndex],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/movie.png'), // Ganti dengan path gambar Anda
+            fit: BoxFit.cover,
+          ),
+        ),
+            child: _screens[_selectedIndex],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
