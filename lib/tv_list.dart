@@ -15,6 +15,8 @@ class TVList extends StatefulWidget {
 class _TVListState extends State<TVList> {
   List<dynamic> tvShows = [];
 
+  String genreName = '';
+
   Future<void> fetchTVShowsByGenre() async {
     String apiUrl =
         'https://api.themoviedb.org/3/discover/tv?with_genres=${widget.genreId}';
@@ -40,6 +42,35 @@ class _TVListState extends State<TVList> {
     }
   }
 
+  Future<void> fetchGenreName() async {
+    String apiUrl = 'https://api.themoviedb.org/3/genre/tv/list';
+
+    try {
+      var response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer ${widget.accessToken}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        var genres = data['genres'] != null ? List.from(data['genres']) : [];
+        var genre = genres.firstWhere(
+          (genre) => genre['id'] == widget.genreId,
+          orElse: () => {},
+        );
+        setState(() {
+          genreName = genre['name'] ?? '';
+        });
+      } else {
+        // Handle API request error here
+      }
+    } catch (error) {
+      // Handle error while making API request here
+    }
+  }
+
   void navigateToTVDetails(dynamic tvShow) {
     Navigator.push(
       context,
@@ -55,13 +86,14 @@ class _TVListState extends State<TVList> {
   void initState() {
     super.initState();
     fetchTVShowsByGenre();
+    fetchGenreName();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('TV Shows by Genre'),
+        title: Text('$genreName TV Shows'),
       ),
       body: ListView.builder(
         itemCount: tvShows.length,

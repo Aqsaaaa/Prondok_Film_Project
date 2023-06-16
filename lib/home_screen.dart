@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:p9_basket_project/setting_screen.dart';
 import 'movie_screen.dart';
 import 'tv_screen.dart';
 
@@ -14,6 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static List<Widget> _screens = [
     MovieScreen(),
     TvScreen(),
+    SettingScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -52,9 +54,13 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.tv),
             label: 'TV',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.black,
         onTap: _onItemTapped,
       ),
     );
@@ -74,6 +80,18 @@ class Movie_Screen extends StatelessWidget {
 }
 
 class Tv_Screen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        'TV Screen',
+        style: TextStyle(fontSize: 24),
+      ),
+    );
+  }
+}
+
+class Setting_Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(

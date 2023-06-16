@@ -2,64 +2,109 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class MovieDetailScreen extends StatefulWidget {
-  final int keywordId;
+class MovieDetailsScreen extends StatefulWidget {
+  final int movieId;
   final String accessToken;
 
-  MovieDetailScreen({required this.keywordId, required this.accessToken});
+  MovieDetailsScreen({required this.movieId, required this.accessToken});
 
   @override
-  _MovieDetailScreenState createState() => _MovieDetailScreenState();
+  _MovieDetailsScreenState createState() => _MovieDetailsScreenState();
 }
 
-class _MovieDetailScreenState extends State<MovieDetailScreen> {
-  List<dynamic> movies = [];
+class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
+  dynamic movie;
 
-  Future<void> fetchMoviesByKeyword() async {
-    String apiUrl = 'https://api.themoviedb.org/3/keyword/${widget.keywordId}/movies';
+  Future<void> fetchMovieDetails() async {
+    String apiUrl =
+        'https://api.themoviedb.org/3/movie/${widget.movieId}?api_key=${widget.accessToken}';
 
     try {
       var response = await http.get(
         Uri.parse(apiUrl),
-        headers: {
-          'Authorization': 'Bearer ${widget.accessToken}',
-        },
       );
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         setState(() {
-          movies = data['results'] != null ? List.from(data['results']) : [];
+          movie = data;
         });
       } else {
-        // Gagal mengambil data dari API, lakukan penanganan kesalahan di sini
+        // Handle API request error here
       }
     } catch (error) {
-      // Terjadi kesalahan saat melakukan permintaan ke API, lakukan penanganan kesalahan di sini
+      // Handle error while making API request here
     }
   }
 
   @override
   void initState() {
     super.initState();
-    fetchMoviesByKeyword();
+    fetchMovieDetails();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (movie == null) {
+      // Render loading indicator or placeholder while fetching movie details
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Movie Details'),
+        ),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Movies by Keyword'),
+        title: Text(movie['title']),
       ),
-      body: ListView.builder(
-        itemCount: movies.length,
-        itemBuilder: (context, index) {
-          var movie = movies[index];
-          return ListTile(
-            title: Text(movie['title']),
-            subtitle: Text('Vote Average: ${movie['vote_average'].toString()}'),
-          );
-        },
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 8),
+            movie['poster_path'] != null
+                ? Image.network(
+                    'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
+                    width: 200,
+                    height: 400,
+                    fit: BoxFit.cover,
+                  )
+                : Placeholder(
+                    fallbackHeight: 400,
+                    fallbackWidth: 200,
+                  ),
+            SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.star,
+                  color: Colors.yellow,
+                ),
+                SizedBox(width: 4),
+                Text(
+                  movie['vote_average'].toString(),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: 8),
+                Text('Vote Count: ${movie['vote_count']}'),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text('Title: ${movie['title']}'),
+            SizedBox(height: 8),
+            Text('Adult: ${movie['adult']}'),
+            SizedBox(height: 8),
+            Text('Popularity: ${movie['popularity']}'),
+          ],
+        ),
       ),
     );
   }

@@ -15,6 +15,8 @@ class MovieList extends StatefulWidget {
 class _MovieListState extends State<MovieList> {
   List<dynamic> movies = [];
 
+  String genreName = '';
+
   Future<void> fetchMoviesByGenre() async {
     String apiUrl =
         'https://api.themoviedb.org/3/discover/movie?with_genres=${widget.genreId}';
@@ -40,6 +42,35 @@ class _MovieListState extends State<MovieList> {
     }
   }
 
+  Future<void> fetchGenreName() async {
+    String apiUrl = 'https://api.themoviedb.org/3/genre/movie/list';
+
+    try {
+      var response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer ${widget.accessToken}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        var genres = data['genres'] != null ? List.from(data['genres']) : [];
+        var genre = genres.firstWhere(
+          (genre) => genre['id'] == widget.genreId,
+          orElse: () => {},
+        );
+        setState(() {
+          genreName = genre['name'] ?? '';
+        });
+      } else {
+        // Handle API request error here
+      }
+    } catch (error) {
+      // Handle error while making API request here
+    }
+  }
+
   void navigateToMovieDetails(dynamic movie) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -51,7 +82,10 @@ class _MovieListState extends State<MovieList> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MovieDetails(movie: movie),
+        builder: (context) => MovieDetailsScreen(
+          movieId: movie['id'],
+          accessToken: widget.accessToken,
+        ),
       ),
     );
   }
@@ -60,38 +94,57 @@ class _MovieListState extends State<MovieList> {
   void initState() {
     super.initState();
     fetchMoviesByGenre();
+    fetchGenreName();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Movies by Genre'),
+        title: Text('$genreName Movies'),
       ),
       body: ListView.builder(
         itemCount: movies.length,
         itemBuilder: (context, index) {
           var movie = movies[index];
+          var voteAverage = movie['vote_average'] ?? 0.0;
+          var posterUrl =
+              'https://image.tmdb.org/t/p/w500${movie['poster_path']}';
+
           return GestureDetector(
             onTap: () => navigateToMovieDetails(movie),
-            child: ListTile(
-              title: Text(movie['title']),
-              subtitle: Row(
-                children: [
-                  Icon(
-                    Icons.star,
-                    color: Colors.yellow,
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text(movie['title']),
+                  subtitle: Row(
+                    children: [
+                      Icon(
+                        Icons.star,
+                        color: Colors.yellow,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        voteAverage.toString(),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 4),
-                  Text(
-                    movie['vote_average'].toString(),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      posterUrl,
+                      fit: BoxFit.cover,
+                      width: 90,
+                      height: 400,
                     ),
                   ),
-                ],
-              ),
+                ),
+                Divider(height: 0),
+              ],
             ),
           );
         },
@@ -100,41 +153,119 @@ class _MovieListState extends State<MovieList> {
   }
 }
 
-class MovieDetails extends StatelessWidget {
-  final dynamic movie;
+class MovieDetailsScreen extends StatefulWidget {
+  final int movieId;
+  final String accessToken;
 
-  MovieDetails({required this.movie});
+  MovieDetailsScreen({required this.movieId, required this.accessToken});
+
+  @override
+  _MovieDetailsScreenState createState() => _MovieDetailsScreenState();
+}
+
+class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
+  dynamic movie;
+
+  Future<void> fetchMovieDetails() async {
+    String apiUrl = 'https://api.themoviedb.org/3/movie/${widget.movieId}';
+
+    try {
+      var response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer ${widget.accessToken}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        setState(() {
+          movie = data;
+        });
+      } else {
+        // Handle API request error here
+      }
+    } catch (error) {
+      // Handle error while making API request here
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMovieDetails();
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (movie == null) {
+      // Render loading indicator or placeholder while fetching movie details
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Movie Details'),
+        ),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(movie['title']),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.star,
-                color: Colors.yellow,
-              ),
-              SizedBox(width: 4),
-              Text(
-                movie['vote_average'].toString(),
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 8),
+            movie['poster_path'] != null
+                ? Image.network(
+                    'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
+                    width: 200,
+                    height: 400,
+                    fit: BoxFit.cover,
+                  )
+                : Placeholder(
+                    fallbackHeight: 400,
+                    fallbackWidth: 200,
+                  ),
+            SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.star,
+                  color: Colors.yellow,
                 ),
+                SizedBox(width: 4),
+                Text(
+                  movie['vote_average'].toString(),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: 8),
+                Text('Vote Count: ${movie['vote_count']}'),
+              ],
+            ),
+            SizedBox(height: 8),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Overview: ${movie['overview']}',
+                textAlign: TextAlign.center,
               ),
-            ],
-          ),
-          SizedBox(height: 8),
-          Text('Overview: ${movie['overview']}'),
-          SizedBox(height: 8),
-          Text('Release Date: ${movie['release_date']}'),
-        ],
+            ),
+            SizedBox(height: 8),
+            Text('Title: ${movie['title']}'),
+            SizedBox(height: 8),
+            Text('Adult: ${movie['adult']}'),
+            SizedBox(height: 8),
+            Text('Popularity: ${movie['popularity']}'),
+          ],
+        ),
       ),
     );
   }

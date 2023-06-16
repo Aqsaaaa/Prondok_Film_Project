@@ -68,7 +68,6 @@ class _TvScreenState extends State<TvScreen> {
           var tvShow = tvShows[index];
           return ListTile(
             title: Text(tvShow['name']),
-            subtitle: Text('Genre ID: ${tvShow['id'].toString()}'),
             onTap: () => navigateToTvShowList(tvShow['id']),
           );
         },

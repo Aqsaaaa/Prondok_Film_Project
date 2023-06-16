@@ -17,12 +17,10 @@ class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Settings'),
-      ),
       body: ListView(
         children: [
           ListTile(
+            leading: Icon(Icons.info),
             title: Text('About Us'),
             onTap: () {
               // Navigasi ke halaman About Us
@@ -31,13 +29,6 @@ class _SettingScreenState extends State<SettingScreen> {
                 MaterialPageRoute(builder: (context) => AboutUsScreen()),
               );
             },
-          ),
-          ListTile(
-            title: Text('Dark Mode'),
-            trailing: Switch(
-              value: isDarkMode,
-              onChanged: (value) => toggleTheme(),
-            ),
           ),
         ],
       ),

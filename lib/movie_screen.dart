@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import'package:http/http.dart' as http;
+import 'package:http/http.dart' as http;
 import 'movie_list.dart';
 
 class MovieScreen extends StatefulWidget {
@@ -53,27 +53,29 @@ class _MovieScreenState extends State<MovieScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView.builder(
-        itemCount: genres.length,
-        itemBuilder: (context, index) {
-          var genre = genres[index];
-          return ListTile(
-            title: Text(genre['name']),
-            subtitle: Text('Genre ID: ${genre['id'].toString()}'),
-            onTap: () {
-              selectGenre(genre['id']);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MovieList(
-                    genreId: selectedGenreId,
-                    accessToken: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmZjc2OGJmYjgwNTU1MWVlZjhlZWY5Nzk1Yzg5YWIxOSIsInN1YiI6IjY0OGIwMjUwYzNjODkxMDE0ZWJjMTJhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.H5rVMDOANbXjMZo5d7laATTvFQ3PElddG7M9f1YJRM4',
+      body: Center(
+        child: ListView.builder(
+          itemCount: genres.length,
+          itemBuilder: (context, index) {
+            var genre = genres[index];
+            return ListTile(
+              title: Center(child: Text(genre['name'])),
+              onTap: () {
+                selectGenre(genre['id']);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MovieList(
+                      genreId: selectedGenreId,
+                      accessToken:
+                          'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmZjc2OGJmYjgwNTU1MWVlZjhlZWY5Nzk1Yzg5YWIxOSIsInN1YiI6IjY0OGIwMjUwYzNjODkxMDE0ZWJjMTJhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.H5rVMDOANbXjMZo5d7laATTvFQ3PElddG7M9f1YJRM4',
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
