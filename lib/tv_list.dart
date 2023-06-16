@@ -14,12 +14,10 @@ class TVList extends StatefulWidget {
 
 class _TVListState extends State<TVList> {
   List<dynamic> tvShows = [];
-
   String genreName = '';
 
   Future<void> fetchTVShowsByGenre() async {
-    String apiUrl =
-        'https://api.themoviedb.org/3/discover/tv?with_genres=${widget.genreId}';
+    String apiUrl = 'https://api.themoviedb.org/3/discover/tv?with_genres=${widget.genreId}';
 
     try {
       var response = await http.get(
@@ -99,9 +97,19 @@ class _TVListState extends State<TVList> {
         itemCount: tvShows.length,
         itemBuilder: (context, index) {
           var tvShow = tvShows[index];
+          var posterPath = tvShow['poster_path'] ?? '';
+
           return GestureDetector(
             onTap: () => navigateToTVDetails(tvShow),
             child: ListTile(
+              leading: posterPath.isNotEmpty
+                  ? Image.network(
+                      'https://image.tmdb.org/t/p/w200$posterPath',
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(),
               title: Text(tvShow['name']),
               subtitle: Row(
                 children: [
@@ -157,6 +165,15 @@ class TVDetails extends StatelessWidget {
               ),
             ],
           ),
+          SizedBox(height: 8),
+          tvShow['poster_path'] != null
+              ? Image.network(
+                  'https://image.tmdb.org/t/p/w500${tvShow['poster_path']}',
+                  width: 200,
+                  height: 300,
+                  fit: BoxFit.cover,
+                )
+              : Container(),
           SizedBox(height: 8),
           Text('Overview: ${tvShow['overview']}'),
           SizedBox(height: 8),

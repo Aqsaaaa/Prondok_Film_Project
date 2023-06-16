@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class TVDetailScreen extends StatefulWidget {
-  final int keywordId;
+  final int genreId;
   final String accessToken;
 
-  TVDetailScreen({required this.keywordId, required this.accessToken});
+  TVDetailScreen({required this.genreId, required this.accessToken});
 
   @override
   _TVDetailScreenState createState() => _TVDetailScreenState();
@@ -15,8 +15,9 @@ class TVDetailScreen extends StatefulWidget {
 class _TVDetailScreenState extends State<TVDetailScreen> {
   List<dynamic> tvShows = [];
 
-  Future<void> fetchTVShowsByKeyword() async {
-    String apiUrl = 'https://api.themoviedb.org/3/keyword/${widget.keywordId}/tv';
+  Future<void> fetchTVShowsByGenre() async {
+    String apiUrl =
+        'https://api.themoviedb.org/3/discover/tv?with_genres=${widget.genreId}';
 
     try {
       var response = await http.get(
@@ -32,24 +33,24 @@ class _TVDetailScreenState extends State<TVDetailScreen> {
           tvShows = data['results'] != null ? List.from(data['results']) : [];
         });
       } else {
-        // Gagal mengambil data dari API, lakukan penanganan kesalahan di sini
+        // Handle API request error here
       }
     } catch (error) {
-      // Terjadi kesalahan saat melakukan permintaan ke API, lakukan penanganan kesalahan di sini
+      // Handle error while making API request here
     }
   }
 
   @override
   void initState() {
     super.initState();
-    fetchTVShowsByKeyword();
+    fetchTVShowsByGenre();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('TV Shows by Keyword'),
+        title: Text('TV Shows by Genre'),
       ),
       body: ListView.builder(
         itemCount: tvShows.length,

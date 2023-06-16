@@ -59,18 +59,17 @@ class _TvScreenState extends State<TvScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('TV Shows'),
-      // ),
-      body: ListView.builder(
-        itemCount: tvShows.length,
-        itemBuilder: (context, index) {
-          var tvShow = tvShows[index];
-          return ListTile(
-            title: Text(tvShow['name']),
-            onTap: () => navigateToTvShowList(tvShow['id']),
-          );
-        },
+      body: Center(
+        child: ListView.builder(
+          itemCount: tvShows.length,
+          itemBuilder: (context, index) {
+            var tvShow = tvShows[index];
+            return ListTile(
+              title: Text(tvShow['name']),
+              onTap: () => navigateToTvShowList(tvShow['id']),
+            );
+          },
+        ),
       ),
     );
   }
