@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Center(
           child: Text(
-            'Home',
+            'Pondok Film',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,

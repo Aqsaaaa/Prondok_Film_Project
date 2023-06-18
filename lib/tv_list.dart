@@ -70,10 +70,17 @@ class _TVListState extends State<TVList> {
   }
 
   void navigateToTVDetails(dynamic tvShow) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('You are viewing movie: ${tvShow['name']}'),
+        duration: Duration(seconds: 3),
+      ),
+    );
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TVDetails(
+        builder: (context) => TVDetailsScreen(
           tvShow: tvShow,
         ),
       ),
@@ -101,33 +108,40 @@ class _TVListState extends State<TVList> {
 
           return GestureDetector(
             onTap: () => navigateToTVDetails(tvShow),
-            child: ListTile(
-              leading: posterPath.isNotEmpty
-                  ? Image.network(
-                      'https://image.tmdb.org/t/p/w200$posterPath',
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                    )
-                  : Container(),
-              title: Text(tvShow['name']),
-              subtitle: Row(
-                children: [
-                  Icon(
-                    Icons.star,
-                    color: Colors.yellow,
-                  ),
-                  SizedBox(width: 4),
-                  Text(
-                    tvShow['vote_average'].toString(),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+            child: Column(
+              children: [ListTile(
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: posterPath.isNotEmpty
+                      ? Image.network(
+                          'https://image.tmdb.org/t/p/w200$posterPath',
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(),
+                ),
+                title: Text(tvShow['name']),
+                subtitle: Row(
+                  children: [
+                    Icon(
+                      Icons.star,
+                      color: Colors.yellow,
                     ),
-                  ),
-                ],
+                    SizedBox(width: 4),
+                    Text(
+                      tvShow['vote_average'].toString(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              ],
             ),
+            
           );
         },
       ),
@@ -135,10 +149,10 @@ class _TVListState extends State<TVList> {
   }
 }
 
-class TVDetails extends StatelessWidget {
+class TVDetailsScreen extends StatelessWidget {
   final dynamic tvShow;
 
-  TVDetails({required this.tvShow});
+  TVDetailsScreen({required this.tvShow});
 
   @override
   Widget build(BuildContext context) {
@@ -146,39 +160,92 @@ class TVDetails extends StatelessWidget {
       appBar: AppBar(
         title: Text(tvShow['name']),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.star,
-                color: Colors.yellow,
+               SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.network(
+                      'https://image.tmdb.org/t/p/w500${tvShow['poster_path']}',
+                      fit: BoxFit.cover,
+                    ),
+                ),
               ),
-              SizedBox(width: 4),
+              SizedBox(height: 20),
               Text(
-                tvShow['vote_average'].toString(),
+                'Vote Average',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.star,
+                    color: Colors.yellow,
+                    size: 25,
+                  ),
+                  Text(
+                    tvShow['vote_average'].toString(),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Vote Count:',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  ),
+              ),
+              Text(
+                '${tvShow['vote_count'].toString()}',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Overview',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  tvShow['overview'],
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              
+              Text(
+                'Adult: ${tvShow['adult'] != null && tvShow['adult'] ? 'Yes' : 'No'}',
+                style: TextStyle(fontSize: 18),
+              ),
+              Text(
+                'Popularity: ${tvShow['popularity'].toString()}',
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 25),
             ],
           ),
-          SizedBox(height: 8),
-          tvShow['poster_path'] != null
-              ? Image.network(
-                  'https://image.tmdb.org/t/p/w500${tvShow['poster_path']}',
-                  width: 200,
-                  height: 300,
-                  fit: BoxFit.cover,
-                )
-              : Container(),
-          SizedBox(height: 8),
-          Text('Overview: ${tvShow['overview']}'),
-          SizedBox(height: 8),
-          Text('First Air Date: ${tvShow['first_air_date']}'),
-        ],
+        ),
       ),
     );
   }

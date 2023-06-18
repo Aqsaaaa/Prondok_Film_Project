@@ -14,7 +14,6 @@ class MovieList extends StatefulWidget {
 
 class _MovieListState extends State<MovieList> {
   List<dynamic> movies = [];
-
   String genreName = '';
 
   Future<void> fetchMoviesByGenre() async {
@@ -138,7 +137,7 @@ class _MovieListState extends State<MovieList> {
                     child: Image.network(
                       posterUrl,
                       fit: BoxFit.cover,
-                      width: 90,
+                      width: 50,
                       height: 400,
                     ),
                   ),
@@ -214,57 +213,91 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       appBar: AppBar(
         title: Text(movie['title']),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(height: 8),
-            movie['poster_path'] != null
-                ? Image.network(
-                    'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
-                    width: 200,
-                    height: 400,
-                    fit: BoxFit.cover,
-                  )
-                : Placeholder(
-                    fallbackHeight: 400,
-                    fallbackWidth: 200,
-                  ),
-            SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.star,
-                  color: Colors.yellow,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.network(
+                      'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
+                      fit: BoxFit.cover,
+                    ),
                 ),
-                SizedBox(width: 4),
-                Text(
-                  movie['vote_average'].toString(),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(width: 8),
-                Text('Vote Count: ${movie['vote_count']}'),
-              ],
-            ),
-            SizedBox(height: 8),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'Overview: ${movie['overview']}',
-                textAlign: TextAlign.center,
               ),
-            ),
-            SizedBox(height: 8),
-            Text('Title: ${movie['title']}'),
-            SizedBox(height: 8),
-            Text('Adult: ${movie['adult']}'),
-            SizedBox(height: 8),
-            Text('Popularity: ${movie['popularity']}'),
-          ],
+              SizedBox(height: 20),
+              Text(
+                'Vote Average',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.star,
+                    color: Colors.yellow,
+                    size: 25,
+                  ),
+                  Text(
+                    movie['vote_average'].toString(),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Vote Count:',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  ),
+              ),
+              Text(
+                '${movie['vote_count'].toString()}',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Overview',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  movie['overview'],
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            
+              Text(
+                'Adult: ${movie['adult'] != null && movie['adult'] ? 'Yes' : 'No'}',
+                style: TextStyle(fontSize: 18),
+              ),
+              Text(
+                'Popularity: ${movie['popularity'].toString()}',
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 25),
+            ],
+          ),
         ),
       ),
     );

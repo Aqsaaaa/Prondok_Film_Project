@@ -9,9 +9,10 @@ class TvScreen extends StatefulWidget {
 }
 
 class _TvScreenState extends State<TvScreen> {
-  List<dynamic> tvShows = [];
+  List<dynamic> genres = [];
+  int selectedGenreId = 0;
 
-  Future<void> fetchTvShows() async {
+  Future<void> fetchGenres() async {
     String apiUrl = 'https://api.themoviedb.org/3/genre/tv/list';
     String accessToken =
         'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmZjc2OGJmYjgwNTU1MWVlZjhlZWY5Nzk1Yzg5YWIxOSIsInN1YiI6IjY0OGIwMjUwYzNjODkxMDE0ZWJjMTJhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.H5rVMDOANbXjMZo5d7laATTvFQ3PElddG7M9f1YJRM4';
@@ -27,7 +28,7 @@ class _TvScreenState extends State<TvScreen> {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         setState(() {
-          tvShows = data['genres'] != null ? List.from(data['genres']) : [];
+          genres = data['genres'] != null ? List.from(data['genres']) : [];
         });
       } else {
         // Handle API request error here
@@ -37,39 +38,52 @@ class _TvScreenState extends State<TvScreen> {
     }
   }
 
+  void selectGenre(int genreId) {
+    setState(() {
+      selectedGenreId = genreId;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    fetchTvShows();
-  }
-
-  void navigateToTvShowList(int genreId) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TVList(
-          genreId: genreId,
-          accessToken:
-              'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmZjc2OGJmYjgwNTU1MWVlZjhlZWY5Nzk1Yzg5YWIxOSIsInN1YiI6IjY0OGIwMjUwYzNjODkxMDE0ZWJjMTJhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.H5rVMDOANbXjMZo5d7laATTvFQ3PElddG7M9f1YJRM4',
-        ),
-      ),
-    );
+    fetchGenres();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: ListView.builder(
-          itemCount: tvShows.length,
-          itemBuilder: (context, index) {
-            var tvShow = tvShows[index];
-            return ListTile(
-              title: Text(tvShow['name']),
-              onTap: () => navigateToTvShowList(tvShow['id']),
-            );
-          },
-        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: genres.length,
+              itemBuilder: (context, index) {
+                var genre = genres[index];
+                return ListTile(
+                  title: Center(child: Text(genre['name'])),
+                  tileColor: selectedGenreId == genre['id']
+                      ? Colors.grey[300]
+                      : Colors.white,
+                  onTap: () {
+                    selectGenre(genre['id']);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TVList(
+                          genreId: selectedGenreId,
+                          accessToken:
+                              'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmZjc2OGJmYjgwNTU1MWVlZjhlZWY5Nzk1Yzg5YWIxOSIsInN1YiI6IjY0OGIwMjUwYzNjODkxMDE0ZWJjMTJhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.H5rVMDOANbXjMZo5d7laATTvFQ3PElddG7M9f1YJRM4',
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
