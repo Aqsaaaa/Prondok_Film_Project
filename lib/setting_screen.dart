@@ -11,11 +11,11 @@ class SettingScreen extends StatelessWidget {
             title: Text("About Us"),
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-              content: Text('You are viewing about us'),
-              duration: Duration(seconds: 3),
-      ),
-    );
+                SnackBar(
+                  content: Text('You are viewing about us'),
+                  duration: Duration(seconds: 3),
+                ),
+              );
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => AboutUsScreen()),
@@ -67,17 +67,26 @@ class AboutUsScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Forum Film',
+                  'Pondok Film',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Forum Film is a community-driven platform where movie enthusiasts can come together to discuss and explore their favorite films. Join us to share your thoughts, discover new movies, and connect with fellow cinephiles!',
+                  'Pondok Film adalah aplikasi yang berfungsi sebagai sumber informasi pendukung tentang film dan acara televisi. Situs ini berisi data yang sangat komprehensif tentang film dari berbagai negara, termasuk informasi seperti judul film, sinopsis, tahun rilis, dan penilaian pengguna.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16),
                 ),
               ],
             ),
+             SizedBox(height: 20),
+                Text(
+                  "DIBUAT OLEH :",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold
+                    ),
+                ),
             SizedBox(height: 20),
             Column(
               children: [
@@ -85,28 +94,33 @@ class AboutUsScreen extends StatelessWidget {
                   width: 150,
                   height: 150,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: Colors.black,
                       width: 2.0,
                     ),
                   ),
-                  child: CircleAvatar(
-                    backgroundImage: AssetImage('assets/photo1.jpg'),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'assets/photo1.png',
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'John Doe',
+                  'Muhammad Cendekia Rayhan Q',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 5),
                 Text(
-                  'NIM: 123456789',
+                  'NIM: 6701213103',
                   style: TextStyle(fontSize: 16),
                 ),
                 Text(
-                  'Jurusan: Computer Science',
+                  'Jurusan: D3 Sistem Informasi',
                   style: TextStyle(fontSize: 16),
                 ),
               ],
@@ -118,28 +132,33 @@ class AboutUsScreen extends StatelessWidget {
                   width: 150,
                   height: 150,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: Colors.black,
                       width: 2.0,
                     ),
                   ),
-                  child: CircleAvatar(
-                    backgroundImage: AssetImage('assets/photo2.jpg'),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'assets/photo2.png',
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Jane Smith',
+                  'Samuel Arjuna Queen B',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 5),
                 Text(
-                  'NIM: 987654321',
+                  'NIM: 6701210036',
                   style: TextStyle(fontSize: 16),
                 ),
                 Text(
-                  'Jurusan: Graphic Design',
+                  'Jurusan: D3 Sistem Informasi',
                   style: TextStyle(fontSize: 16),
                 ),
               ],
@@ -151,28 +170,33 @@ class AboutUsScreen extends StatelessWidget {
                   width: 150,
                   height: 150,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: Colors.black,
                       width: 2.0,
                     ),
                   ),
-                  child: CircleAvatar(
-                    backgroundImage: AssetImage('assets/photo2.jpg'),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'assets/photo3.png',
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Jane Smith',
+                  'Javier Yafanto Joedo',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 5),
                 Text(
-                  'NIM: 987654321',
+                  'NIM: 6701213053',
                   style: TextStyle(fontSize: 16),
                 ),
                 Text(
-                  'Jurusan: Graphic Design',
+                  'Jurusan: D3 Sistem Informasi',
                   style: TextStyle(fontSize: 16),
                 ),
               ],
@@ -180,7 +204,6 @@ class AboutUsScreen extends StatelessWidget {
             SizedBox(height: 20),
           ],
         ),
-        
       ),
     );
   }

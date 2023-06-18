@@ -61,7 +61,10 @@ flutter:
   assets:
     - assets/logo.png
     - assets/movie.png 
-    - packages/material_design_icons_flutter/fonts/
+    - assets/photo1.png
+    - assets/photo2.png
+    - assets/photo3.png
+
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

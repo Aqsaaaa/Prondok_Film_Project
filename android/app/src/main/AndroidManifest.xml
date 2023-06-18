@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="Because p9_basket_project"
+        android:label="Pondok Film"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
