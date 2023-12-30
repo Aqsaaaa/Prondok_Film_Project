@@ -73,6 +73,14 @@ class _TVListState extends State<TVList> {
     }
   }
 
+  Future<bool> _isFavorite(int index) async {
+    final database = await databaseFuture;
+    final tvShow = tvShows[index];
+    final id = tvShow['id'] ?? 0;
+    final existingFavorite = await database.favoriteDao.findFavoriteById(id);
+    return existingFavorite != null;
+  }
+
   Future<void> fetchGenreName() async {
     String apiUrl = ApiEndPoint.kApiTvGenres;
 
@@ -212,8 +220,51 @@ class _TVListState extends State<TVList> {
                                 textAlign: TextAlign.center,
                               ),
                               IconButton(
-                                  onPressed: () => _addAllFavorites(index),
-                                  icon: Icon(Icons.bookmark_border))
+                                onPressed: () async {
+                                  if (await _isFavorite(index)) {
+                                    final database = await databaseFuture;
+                                    final tvShow = tvShows[index];
+                                    final id = tvShow['id'] ?? 0;
+                                    await database.favoriteDao
+                                        .deleteFavoriteById(id);
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Removed from favorites'),
+                                        duration: Duration(seconds: 1),
+                                      ),
+                                    );
+                                  } else {
+                                    // Tambahkan item ke database jika belum ada
+                                    _addAllFavorites(index);
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Added to favorites'),
+                                        duration: Duration(seconds: 1),
+                                      ),
+                                    );
+                                  }
+
+                                  // Perbarui tampilan
+                                  setState(() {
+                                    favoritesFuture = getFavorites();
+                                  });
+                                },
+                                icon: FutureBuilder<bool>(
+                                  future: _isFavorite(index),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.data == true) {
+                                      // Item sudah ada di database, tampilkan ikon berwarna kuning
+                                      return Icon(Icons.bookmark,
+                                          color: Colors.yellow);
+                                    } else {
+                                      // Item belum ada di database, tampilkan ikon berwarna putih
+                                      return Icon(Icons.bookmark_border);
+                                    }
+                                  },
+                                ),
+                              )
                             ],
                           ),
                         ),

@@ -135,6 +135,24 @@ class _$FavoriteDao extends FavoriteDao {
   }
 
   @override
+  Future<Favorite?> findFavoriteById(int id) async {
+    return _queryAdapter.query('SELECT * FROM Favorite WHERE id = ?1',
+        mapper: (Map<String, Object?> row) => Favorite(
+            row['id'] as int,
+            row['title'] as String,
+            row['poster_path'] as String,
+            (row['adult'] as int) != 0,
+            row['popularity'] as double),
+        arguments: [id]);
+  }
+
+  @override
+  Future<void> deleteFavoriteById(int id) async {
+    await _queryAdapter
+        .queryNoReturn('DELETE FROM Favorite WHERE id = ?1', arguments: [id]);
+  }
+
+  @override
   Future<void> insertFavorite(Favorite favorite) async {
     await _favoriteInsertionAdapter.insert(favorite, OnConflictStrategy.abort);
   }
