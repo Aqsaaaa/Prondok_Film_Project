@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:p9_basket_project/endpoint/endpoint.dart';
+import 'package:p9_basket_project/utils/endpoint.dart';
 import 'package:p9_basket_project/gen/colors.gen.dart';
 import 'tv_list.dart';
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:p9_basket_project/gen/colors.gen.dart';
+import 'package:p9_basket_project/modules/favorite/favorite_screen.dart';
 import '../movie/movie_screen.dart';
 import '../television/tv_screen.dart';
 
@@ -14,6 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static List<Widget> _screens = [
     MovieScreen(),
     TvScreen(),
+    FavoriteMovieTv(),
   ];
 
   void _onItemTapped(int index) {
@@ -63,6 +65,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.tv),
             label: 'TV',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.tv),
+            label: 'Favorite',
           ),
         ],
         currentIndex: _selectedIndex,

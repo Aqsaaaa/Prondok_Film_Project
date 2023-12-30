@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../../endpoint/endpoint.dart';
+import '../../utils/endpoint.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
   final int movieId;

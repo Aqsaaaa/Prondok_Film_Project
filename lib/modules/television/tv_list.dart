@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:p9_basket_project/endpoint/endpoint.dart';
+import 'package:p9_basket_project/utils/database.dart';
+import 'package:p9_basket_project/utils/endpoint.dart';
 import 'package:p9_basket_project/gen/colors.gen.dart';
+import 'package:p9_basket_project/utils/favorite.dart';
 
 import 'tv_details.dart';
 
@@ -17,6 +20,9 @@ class TVList extends StatefulWidget {
 }
 
 class _TVListState extends State<TVList> {
+  late Future<AppDatabase> databaseFuture;
+  late Future<List<Favorite>> favoritesFuture;
+
   List<dynamic> tvShows = [];
   String genreName = '';
 
@@ -39,6 +45,32 @@ class _TVListState extends State<TVList> {
         });
       } else {}
     } catch (error) {}
+  }
+
+  Future<void> _addAllFavorites(int index) async {
+    if (index >= 0 && index < tvShows.length) {
+      final database = await databaseFuture;
+      final tvShow = tvShows[index];
+      final id = tvShow['id'] ?? Random().nextInt(1000);
+      final title = tvShow['name'] ?? 'Unknown Title';
+      final posterPath = tvShow['poster_path'] ?? '';
+      final isAdult = tvShow['adult'] ?? false;
+      final popularity = tvShow['Popularity'] ?? 0.0;
+
+      final favorite = Favorite(
+        id,
+        title,
+        'https://image.tmdb.org/t/p/w200$posterPath',
+        isAdult,
+        popularity,
+      );
+
+      await database.favoriteDao.insertFavorite(favorite);
+
+      setState(() {
+        favoritesFuture = getFavorites();
+      });
+    }
   }
 
   Future<void> fetchGenreName() async {
@@ -66,6 +98,11 @@ class _TVListState extends State<TVList> {
     } catch (error) {}
   }
 
+  Future<List<Favorite>> getFavorites() async {
+    final database = await databaseFuture;
+    return database.favoriteDao.findAllPeople();
+  }
+
   void navigateToTVDetails(dynamic tvShow) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -89,6 +126,8 @@ class _TVListState extends State<TVList> {
     super.initState();
     fetchTVShowsByGenre();
     fetchGenreName();
+    databaseFuture = $FloorAppDatabase.databaseBuilder('favorites.db').build();
+    favoritesFuture = getFavorites();
   }
 
   @override
@@ -162,13 +201,20 @@ class _TVListState extends State<TVList> {
                           ),
                         ),
                         Center(
-                          child: Text(
-                            tvShow['name'],
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: ColorName.white),
-                            textAlign: TextAlign.center,
+                          child: Row(
+                            children: [
+                              Text(
+                                tvShow['name'],
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: ColorName.white),
+                                textAlign: TextAlign.center,
+                              ),
+                              IconButton(
+                                  onPressed: () => _addAllFavorites(index),
+                                  icon: Icon(Icons.bookmark_border))
+                            ],
                           ),
                         ),
                         Row(
@@ -250,13 +296,3 @@ class _TVListState extends State<TVList> {
     );
   }
 }
-
-
-// Text(
-//                         tvShow['vote_average'].toString(),
-//                         style: TextStyle(
-//                           fontSize: 16,
-//                           fontWeight: FontWeight.bold,
-//                         ),
-//                       ),
-

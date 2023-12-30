@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:p9_basket_project/endpoint/endpoint.dart';
+import 'package:p9_basket_project/utils/endpoint.dart';
 
 class TVDetailsScreen extends StatelessWidget {
   final dynamic tvShow;

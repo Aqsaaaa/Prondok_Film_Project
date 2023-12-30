@@ -4,6 +4,7 @@ import 'package:p9_basket_project/gen/colors.gen.dart';
 
 import 'gen/assets.gen.dart';
 
+
 class SplashScreen extends StatefulWidget {
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -33,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Container(
           width: 200.0,
           height: 200.0,
-          child: Assets.images.logo.image(), // Mengambil logo dari aset
+          child: Assets.images.logo.image(),
         ),
       ),
     );
