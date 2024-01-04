@@ -14,8 +14,7 @@ class Styles {
         foregroundColor: isDarkMode ? Colors.white : Colors.black,
       ),
       appBarTheme: AppBarTheme(
-        iconTheme:
-            IconThemeData(color: isDarkMode ? Colors.white : Colors.black),
+        iconTheme: IconThemeData(color: ColorName.white),
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         titleTextStyle: TextStyle(
@@ -57,12 +56,12 @@ class Styles {
             ),
       ),
       tabBarTheme: TabBarTheme(
-        labelColor: isDarkMode ? Colors.white : ColorName.primary,
-        unselectedLabelColor: isDarkMode ? Colors.white70 : Colors.black54,
+        labelColor: ColorName.white,
+        unselectedLabelColor: ColorName.white,
         indicator: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: isDarkMode ? Colors.white : ColorName.primary,
+              color: ColorName.white,
               width: 2,
             ),
           ),
