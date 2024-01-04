@@ -1,8 +1,12 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:p9_basket_project/utils/endpoint.dart';
 import 'package:p9_basket_project/modules/movie/movie_details.dart';
+
+import '../../utils/database.dart';
+import '../../utils/favorite.dart';
 
 class MovieList extends StatefulWidget {
   final int genreId;
@@ -15,6 +19,8 @@ class MovieList extends StatefulWidget {
 }
 
 class _MovieListState extends State<MovieList> {
+  late Future<AppDatabase> databaseFuture;
+  late Future<List<Movie>> moviesFuture;
   List<dynamic> movies = [];
   String genreName = '';
 
@@ -38,6 +44,45 @@ class _MovieListState extends State<MovieList> {
         print(data);
       } else {}
     } catch (error) {}
+  }
+
+  Future<void> _addAllFavorites(int index) async {
+    if (index >= 0 && index < movies.length) {
+      final database = await databaseFuture;
+      final tvShow = movies[index];
+      final id = tvShow['id'] ?? Random().nextInt(1000);
+      final title = tvShow['name'] ?? 'Unknown Title';
+      final posterPath = tvShow['poster_path'] ?? '';
+      final isAdult = tvShow['adult'] ?? false;
+      final popularity = tvShow['Popularity'] ?? 0.0;
+
+      final movie = Movie(
+        id,
+        title,
+        'https://image.tmdb.org/t/p/w200$posterPath',
+        isAdult,
+        popularity,
+      );
+
+      await database.movieDao.insertMovie(movie);
+
+      setState(() {
+        moviesFuture = getMovies();
+      });
+    }
+  }
+
+  Future<bool> _isFavorite(int index) async {
+    final database = await databaseFuture;
+    final movie = movies[index];
+    final id = movie['id'] ?? 0;
+    final existingFavorite = await database.movieDao.findMovieById(id);
+    return existingFavorite != null;
+  }
+
+  Future<List<Movie>> getMovies() async {
+    final database = await databaseFuture;
+    return database.movieDao.findAllPeople();
   }
 
   Future<void> fetchGenreName() async {
@@ -89,6 +134,10 @@ class _MovieListState extends State<MovieList> {
     super.initState();
     fetchMoviesByGenre();
     fetchGenreName();
+    databaseFuture = $FloorAppDatabase
+        .databaseBuilder('favorites.db')
+        .addMigrations([AppDatabase.migration2to3]).build();
+    moviesFuture = getMovies();
   }
 
   @override
@@ -97,47 +146,164 @@ class _MovieListState extends State<MovieList> {
       appBar: AppBar(
         title: Text('$genreName Movies'),
       ),
-      body: ListView.builder(
+      body: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: MediaQuery.of(context).size.width /
+              (MediaQuery.of(context).size.height / 1.05),
+        ),
         itemCount: movies.length,
         itemBuilder: (context, index) {
           var movie = movies[index];
-          var voteAverage = movie['vote_average'] ?? 0.0;
-          var posterUrl = kApiImageBaseUrl + '${movie['poster_path']}';
 
           return GestureDetector(
             onTap: () => navigateToMovieDetails(movie),
-            child: Column(
-              children: [
-                ListTile(
-                  title: Text(movie['title']),
-                  subtitle: Row(
-                    children: [
-                      Icon(
-                        Icons.star,
-                        color: Colors.yellow,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                side: BorderSide(width: 2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        'https://image.tmdb.org/t/p/w200${movie['poster_path']}',
+                        fit: BoxFit.cover,
                       ),
-                      SizedBox(width: 4),
-                      Text(
-                        voteAverage.toString(),
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      posterUrl,
-                      fit: BoxFit.cover,
-                      width: 50,
-                      height: 400,
                     ),
-                  ),
+                    Center(
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Column(
+                              children: [
+                                Text(
+                                  movie['title'].length > 25
+                                      ? '${movie['title'].substring(0, 25)}...'
+                                      : movie['title'],
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              if (await _isFavorite(index)) {
+                                final database = await databaseFuture;
+                                final movie = movies[index];
+                                final id = movie['id'] ?? 0;
+                                await database.movieDao.deleteMovieById(id);
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Removed from favorites'),
+                                    duration: Duration(seconds: 1),
+                                  ),
+                                );
+                              } else {
+                                _addAllFavorites(index);
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Added to favorites'),
+                                    duration: Duration(seconds: 1),
+                                  ),
+                                );
+                              }
+                              setState(() {
+                                moviesFuture = getMovies();
+                              });
+                            },
+                            icon: FutureBuilder<bool>(
+                              future: _isFavorite(index),
+                              builder: (context, snapshot) {
+                                if (snapshot.data == true) {
+                                  return Icon(Icons.bookmark,
+                                      color: Colors.yellow);
+                                } else {
+                                  return Icon(Icons.bookmark_border);
+                                }
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          children: [
+                            Text('Popularity',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                            Text(
+                              '${movie['popularity'].toString()}',
+                              style: TextStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              'Adult',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              movie['adult'] == null ? 'NO' : 'YES',
+                              style: TextStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              'Rating',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.star,
+                                  color: Colors.yellow,
+                                  size: 12,
+                                ),
+                                Text(
+                                  movie['vote_average'].toString(),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                Divider(height: 0),
-              ],
+              ),
             ),
           );
         },
@@ -145,3 +311,8 @@ class _MovieListState extends State<MovieList> {
     );
   }
 }
+
+
+// var movie = movies[index];
+// var voteAverage = movie['vote_average'] ?? 0.0;
+// var posterUrl = kApiImageBaseUrl + '${movie['poster_path']}';

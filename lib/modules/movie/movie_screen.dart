@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:p9_basket_project/utils/endpoint.dart';
-import 'package:p9_basket_project/gen/colors.gen.dart';
 import 'movie_list.dart';
 
 class MovieScreen extends StatefulWidget {
@@ -74,18 +73,15 @@ class _MovieScreenState extends State<MovieScreen> {
                   );
                 },
                 child: Card(
-                  color: ColorName.primary,
                   shape: RoundedRectangleBorder(
-                    side: BorderSide(color: ColorName.secondary, width: 3.0),
+                    side: BorderSide(width: 3.0),
                     borderRadius:
                         BorderRadius.circular(10.0), // Set your desired radius
                   ),
                   child: Center(
                     child: Text(genre['name'],
                         style: TextStyle(
-                            fontSize: 16,
-                            color: ColorName.white,
-                            fontWeight: FontWeight.bold)),
+                            fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                 ),
               );

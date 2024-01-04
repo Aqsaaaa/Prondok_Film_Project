@@ -63,13 +63,15 @@ class _$AppDatabase extends AppDatabase {
 
   FavoriteDao? _favoriteDaoInstance;
 
+  MovieDao? _movieDaoInstance;
+
   Future<sqflite.Database> open(
     String path,
     List<Migration> migrations, [
     Callback? callback,
   ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 2,
+      version: 3,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -86,6 +88,8 @@ class _$AppDatabase extends AppDatabase {
       onCreate: (database, version) async {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Favorite` (`id` INTEGER NOT NULL, `title` TEXT NOT NULL, `poster_path` TEXT NOT NULL, `adult` INTEGER NOT NULL, `popularity` REAL NOT NULL, PRIMARY KEY (`id`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `Movie` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `poster_path` TEXT NOT NULL, `adult` INTEGER NOT NULL, `popularity` REAL NOT NULL, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -96,6 +100,11 @@ class _$AppDatabase extends AppDatabase {
   @override
   FavoriteDao get favoriteDao {
     return _favoriteDaoInstance ??= _$FavoriteDao(database, changeListener);
+  }
+
+  @override
+  MovieDao get movieDao {
+    return _movieDaoInstance ??= _$MovieDao(database, changeListener);
   }
 }
 
@@ -155,5 +164,64 @@ class _$FavoriteDao extends FavoriteDao {
   @override
   Future<void> insertFavorite(Favorite favorite) async {
     await _favoriteInsertionAdapter.insert(favorite, OnConflictStrategy.abort);
+  }
+}
+
+class _$MovieDao extends MovieDao {
+  _$MovieDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
+        _movieInsertionAdapter = InsertionAdapter(
+            database,
+            'Movie',
+            (Movie item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'poster_path': item.poster_path,
+                  'adult': item.adult ? 1 : 0,
+                  'popularity': item.popularity
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<Movie> _movieInsertionAdapter;
+
+  @override
+  Future<List<Movie>> findAllPeople() async {
+    return _queryAdapter.queryList('SELECT * FROM Movie',
+        mapper: (Map<String, Object?> row) => Movie(
+            row['id'] as int,
+            row['name'] as String,
+            row['poster_path'] as String,
+            (row['adult'] as int) != 0,
+            row['popularity'] as double));
+  }
+
+  @override
+  Future<Movie?> findMovieById(int id) async {
+    return _queryAdapter.query('SELECT * FROM Movie WHERE id = ?1',
+        mapper: (Map<String, Object?> row) => Movie(
+            row['id'] as int,
+            row['name'] as String,
+            row['poster_path'] as String,
+            (row['adult'] as int) != 0,
+            row['popularity'] as double),
+        arguments: [id]);
+  }
+
+  @override
+  Future<void> deleteMovieById(int id) async {
+    await _queryAdapter
+        .queryNoReturn('DELETE FROM Movie WHERE id = ?1', arguments: [id]);
+  }
+
+  @override
+  Future<void> insertMovie(Movie movie) async {
+    await _movieInsertionAdapter.insert(movie, OnConflictStrategy.abort);
   }
 }

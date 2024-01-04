@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:p9_basket_project/gen/colors.gen.dart';
 import 'package:p9_basket_project/modules/favorite/favorite_screen.dart';
+import 'package:provider/provider.dart';
+import '../../utils/dark_mode.dart';
 import '../movie/movie_screen.dart';
 import '../television/tv_screen.dart';
 
@@ -26,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeState = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
@@ -41,6 +44,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(themeState.darkTheme
+                  ? Icons.light_mode_outlined
+                  : Icons.dark_mode_outlined),
+              onPressed: () {
+                setState(() {
+                  themeState.setDarkTheme = !themeState.darkTheme;
+                });
+              },
+            ),
+          ],
           centerTitle: true,
           title: Text(
             'PONDOK FILM',
@@ -72,7 +87,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: ColorName.secondary,
         onTap: _onItemTapped,
       ),
     );

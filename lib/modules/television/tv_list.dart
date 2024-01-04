@@ -6,7 +6,9 @@ import 'package:p9_basket_project/utils/database.dart';
 import 'package:p9_basket_project/utils/endpoint.dart';
 import 'package:p9_basket_project/gen/colors.gen.dart';
 import 'package:p9_basket_project/utils/favorite.dart';
+import 'package:provider/provider.dart';
 
+import '../../utils/dark_mode.dart';
 import 'tv_details.dart';
 
 class TVList extends StatefulWidget {
@@ -140,6 +142,7 @@ class _TVListState extends State<TVList> {
 
   @override
   Widget build(BuildContext context) {
+    final themeState = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80.0),
@@ -163,6 +166,18 @@ class _TVListState extends State<TVList> {
               ),
             ),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(themeState.darkTheme
+                  ? Icons.light_mode_outlined
+                  : Icons.dark_mode_outlined),
+              onPressed: () {
+                setState(() {
+                  themeState.setDarkTheme = !themeState.darkTheme;
+                });
+              },
+            ),
+          ],
           centerTitle: true,
           title: Text(
             '${genreName} TV Shows',
@@ -191,9 +206,8 @@ class _TVListState extends State<TVList> {
               return GestureDetector(
                 onTap: () => navigateToTVDetails(tvShow),
                 child: Card(
-                  color: ColorName.primary,
                   shape: RoundedRectangleBorder(
-                    side: BorderSide(color: ColorName.secondary, width: 2),
+                    side: BorderSide(width: 2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Padding(
@@ -211,13 +225,21 @@ class _TVListState extends State<TVList> {
                         Center(
                           child: Row(
                             children: [
-                              Text(
-                                tvShow['name'],
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: ColorName.white),
-                                textAlign: TextAlign.center,
+                              Flexible(
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      tvShow['name'].length > 25
+                                          ? '${tvShow['name'].substring(0, 25)}...'
+                                          : tvShow['name'],
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
                               ),
                               IconButton(
                                 onPressed: () async {
@@ -235,7 +257,6 @@ class _TVListState extends State<TVList> {
                                       ),
                                     );
                                   } else {
-                                    // Tambahkan item ke database jika belum ada
                                     _addAllFavorites(index);
 
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -245,8 +266,6 @@ class _TVListState extends State<TVList> {
                                       ),
                                     );
                                   }
-
-                                  // Perbarui tampilan
                                   setState(() {
                                     favoritesFuture = getFavorites();
                                   });
@@ -255,11 +274,9 @@ class _TVListState extends State<TVList> {
                                   future: _isFavorite(index),
                                   builder: (context, snapshot) {
                                     if (snapshot.data == true) {
-                                      // Item sudah ada di database, tampilkan ikon berwarna kuning
                                       return Icon(Icons.bookmark,
                                           color: Colors.yellow);
                                     } else {
-                                      // Item belum ada di database, tampilkan ikon berwarna putih
                                       return Icon(Icons.bookmark_border);
                                     }
                                   },
@@ -273,18 +290,15 @@ class _TVListState extends State<TVList> {
                           children: [
                             Column(
                               children: [
-                                Text(
-                                  'Popularity',
-                                  style: TextStyle(
+                                Text('Popularity',
+                                    style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
-                                      color: ColorName.white),
-                                ),
+                                    )),
                                 Text(
                                   '${tvShow['popularity'].toString()}',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: ColorName.white,
                                   ),
                                 ),
                               ],
@@ -294,15 +308,14 @@ class _TVListState extends State<TVList> {
                                 Text(
                                   'Adult',
                                   style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: ColorName.white),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 Text(
                                   tvShow['adult'] == null ? 'NO' : 'YES',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: ColorName.white,
                                   ),
                                 ),
                               ],
