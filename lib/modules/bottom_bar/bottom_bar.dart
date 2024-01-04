@@ -17,7 +17,6 @@ class _HomeScreenState extends State<HomeScreen> {
   static List<Widget> _screens = [
     MovieScreen(),
     TvScreen(),
-    FavoriteMovieTv(),
   ];
 
   void _onItemTapped(int index) {
@@ -30,6 +29,24 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final themeState = Provider.of<ThemeProvider>(context);
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FavoriteMovieTv(),
+            ),
+          );
+        },
+        child: Icon(Icons.bookmarks_outlined),
+        backgroundColor: ColorName.primary,
+        foregroundColor: ColorName.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(100),
+        ),
+      ),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: AppBar(
@@ -72,6 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: _screens[_selectedIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 10,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.movie),
@@ -80,10 +98,6 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.tv),
             label: 'TV',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.tv),
-            label: 'Favorite',
           ),
         ],
         currentIndex: _selectedIndex,
