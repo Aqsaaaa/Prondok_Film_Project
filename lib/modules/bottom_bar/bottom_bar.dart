@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:p9_basket_project/gen/colors.gen.dart';
-import 'package:p9_basket_project/modules/favorite/favorite_screen.dart';
+import 'package:p9_basket_project/modules/favorite/favorite_tv.dart';
 import 'package:provider/provider.dart';
 import '../../utils/dark_mode.dart';
 import '../movie/movie_screen.dart';

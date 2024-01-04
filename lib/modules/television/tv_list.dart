@@ -57,7 +57,7 @@ class _TVListState extends State<TVList> {
       final title = tvShow['name'] ?? 'Unknown Title';
       final posterPath = tvShow['poster_path'] ?? '';
       final isAdult = tvShow['adult'] ?? false;
-      final popularity = tvShow['Popularity'] ?? 0.0;
+      final popularity = tvShow['popularity'] ;
 
       final favorite = Favorite(
         id,

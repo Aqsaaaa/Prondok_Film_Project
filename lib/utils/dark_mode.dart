@@ -36,6 +36,18 @@ class Styles {
               side: BorderSide(
             color: isDarkMode ? ColorName.primary : ColorName.white,
           ))),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: isDarkMode
+                  ? const Color(0xFF272727)
+                  : const Color(0xFFFFFFFF),
+              foregroundColor: isDarkMode ? Colors.white : ColorName.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(
+                    color: isDarkMode ? Colors.black : ColorName.primary),
+              ))),
       textTheme: GoogleFonts.poppinsTextTheme(
         Theme.of(context).textTheme.apply(
               bodyColor: isDarkMode ? Colors.white : Colors.black,
